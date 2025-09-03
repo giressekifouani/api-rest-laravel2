@@ -11,28 +11,28 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        // Requête POST vers /register avec tous les champs requis
+        // Envoie du formulaire d'inscription
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'user',             // valeur par défaut compatible avec la contrainte CHECK
-            'telephone' => '0000000000',  // valeur par défaut compatible avec NOT NULL
+            'telephone' => '0000000000', // valeur par défaut
+            'role' => 'user',             // valeur par défaut compatible avec le CHECK constraint
         ]);
 
         // Vérifie que l'utilisateur a bien été créé en base
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'name' => 'Test User',
-            'role' => 'user',
             'telephone' => '0000000000',
+            'role' => 'user',
         ]);
 
         // Vérifie que l'utilisateur est authentifié
         $this->assertAuthenticated();
 
-        // Vérifie que la réponse redirige vers la page d'accueil ou /home
-        $response->assertRedirect('/home');
+        // Vérifie que la réponse redirige correctement après inscription
+        $response->assertRedirect('/home'); // ou la route de redirection après l'inscription
     }
 }
