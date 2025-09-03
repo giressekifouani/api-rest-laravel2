@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class RegistrationTest extends TestCase
 {
@@ -17,22 +16,22 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'admin',         // champ requis par la contrainte CHECK
             'telephone' => '0000000000', // champ requis par la table
+            'role' => 'user',             // valeur par défaut compatible avec le CHECK constraint
         ]);
 
         // Vérifie que l'utilisateur a bien été créé
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'name' => 'Test User',
+            'telephone' => '0000000000',
+            'role' => 'user',
         ]);
 
-        // Authentifie l'utilisateur pour le test
-        $user = User::where('email', 'test@example.com')->first();
-        $this->actingAs($user);
-        $this->assertAuthenticatedAs($user);
+        // Vérifie que l'utilisateur est authentifié
+        $this->assertAuthenticated();
 
-        // Vérifie que la réponse redirige vers le dashboard
-        $response->assertRedirect('/dashboard');
+        // Vérifie que la réponse est correcte
+        $response->assertNoContent();
     }
 }
