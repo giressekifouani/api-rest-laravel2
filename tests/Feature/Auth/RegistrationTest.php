@@ -12,28 +12,27 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        // Envoi de la requête d'inscription
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'role' => 'admin',         // champ requis par la contrainte CHECK
+            'telephone' => '0000000000', // champ requis par la table
         ]);
 
-        // Vérifie que l'utilisateur a bien été créé dans la base
+        // Vérifie que l'utilisateur a bien été créé
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'name' => 'Test User',
         ]);
 
-        // Récupère l'utilisateur créé et l'authentifie pour le test
+        // Authentifie l'utilisateur pour le test
         $user = User::where('email', 'test@example.com')->first();
         $this->actingAs($user);
-
-        // Vérifie qu'on est authentifié
         $this->assertAuthenticatedAs($user);
 
-        // Vérifie que la réponse redirige (Breeze/Jetstream redirige souvent vers /dashboard)
+        // Vérifie que la réponse redirige vers le dashboard
         $response->assertRedirect('/dashboard');
     }
 }
